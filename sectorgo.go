@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
@@ -69,8 +70,13 @@ func GetStatus(userID, password string) (*Status, error) {
 	if err != nil {
 		return nil, err
 	}
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	//fmt.Println(string(body))
 	status := &Status{}
-	if err := json.NewDecoder(resp.Body).Decode(status); err != nil {
+	if err := json.Unmarshal(body, status); err != nil {
 		return nil, err
 	}
 	return status, nil
